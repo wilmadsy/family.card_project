@@ -58,7 +58,7 @@
             text-align: center;
         }
         .member-table th {
-            background-color: #f2f2f2;
+            background-color: #faeaea;
         }
         .action-buttons {
             margin-top: 20px;
@@ -123,6 +123,7 @@
                             <th>Tanggal Lahir</th>
                             <th>pendidikan</th>
                             <th>Pekerjaan</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -136,6 +137,7 @@
                             <td>{{ $item->date_of_birth }}</td>
                             <td>{{ $item->education }}</td>
                             <td>{{ $item->employment }}</td>
+                            <td>{{ $item->status }}</td>
                         </tr>
                         @endforeach
                     </tbody> 

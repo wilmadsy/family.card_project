@@ -15,17 +15,43 @@ class familymembercontroller extends Controller
      */
     public function index(): View
     {
-        $fcard = DB::table('familycards')
-        ->select()
-        // ->get()
-        ->latest()
-        ->paginate(3);
-        $fmember = DB::table('familycard_detail')
-            ->select()
-            ->get();
+        // $fcard = DB::table('familycards')
+        // ->select()
+        // ->get();
+
+        // ->latest();
+        // ->first();
+
+        // $fmember = DB::table('familycard_detail')
+        //     ->select()
+        //     ->get();
             // ->paginate(10);
-        // return(dd($fcard, $fmember));
-        return view('layouts.family.index', compact('fcard','fmember'));
+
+       $fcard = DB::table('familycards as fc')
+    ->select(
+        'fc.id', // Menggunakan ID sebagai primary key
+        'fc.fc_number', 
+        'fc.address',
+        DB::raw('(SELECT full_name FROM familycard_detail 
+                WHERE familycard_id = fc.id AND status = "Ayah" 
+                LIMIT 1) as kepala_kk')
+    )
+    ->orderBy('fc.id', 'desc')
+    ->get();
+        // Cek apakah ada data dengan status 'Ayah'
+        // $fmember = DB::table('familycard_detail')
+        //     ->where('status', 'Ayah')
+        //     ->get();
+
+    // $fmember = DB::table('familycard_detail')
+    // ->where('status', 'Ayah')
+    // ->where('familycard_id', '29 ') // Cek khusus untuk KK nomor 2
+    // ->get();
+    // // Tambahkan ini!
+    // ->orderBy('fc.fc_number', 'asc')
+
+        // return(dd($fcard));
+        return view('layouts.family.index', compact('fcard'));
     }
 
     /**
