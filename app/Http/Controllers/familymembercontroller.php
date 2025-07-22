@@ -5,53 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\familycard;
 use App\Models\familymember;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class familymembercontroller extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): View
+    public function index(Request $request)
     {
-        // $fcard = DB::table('familycards')
-        // ->select()
-        // ->get();
-
-        // ->latest();
-        // ->first();
-
-        // $fmember = DB::table('familycard_detail')
-        //     ->select()
-        //     ->get();
-            // ->paginate(10);
-
-       $fcard = DB::table('familycards as fc')
-    ->select(
+        $no_kk = $request->no_kk;
+        $fcard = DB::table('familycards as fc')
+        // ->where('fc.fc_number', 'LIKE', '%'.$no_kk.'%')
+        ->select(
         'fc.id', // Menggunakan ID sebagai primary key
         'fc.fc_number', 
         'fc.address',
         DB::raw('(SELECT full_name FROM familycard_detail 
                 WHERE familycard_id = fc.id AND status = "Ayah" 
                 LIMIT 1) as kepala_kk')
-    )
-    ->orderBy('fc.id', 'desc')
-    ->get();
-        // Cek apakah ada data dengan status 'Ayah'
-        // $fmember = DB::table('familycard_detail')
-        //     ->where('status', 'Ayah')
-        //     ->get();
-
-    // $fmember = DB::table('familycard_detail')
-    // ->where('status', 'Ayah')
-    // ->where('familycard_id', '29 ') // Cek khusus untuk KK nomor 2
-    // ->get();
-    // // Tambahkan ini!
-    // ->orderBy('fc.fc_number', 'asc')
-
-        // return(dd($fcard));
-        return view('layouts.family.index', compact('fcard'));
+        )
+        ->where('fc.fc_number', 'LIKE', '%'.$no_kk.'%')
+        ->orderBy('fc.id', 'desc')
+        ->paginate(5);
+        // 
+        // );
+        
+        // return (dd($no_kk, $fcard));
+        return view('layouts.family.index', compact('no_kk', 'fcard'));
     }
 
     /**
@@ -76,11 +56,11 @@ class familymembercontroller extends Controller
             'ward' => $request->input('ward'),
             'districk' => $request->input('districk'),
             'regency' => $request->input('regency'),
-            'region'=> $request->input('region'),
-            'created_at' => now(), 
+            'region' => $request->input('region'),
+            'created_at' => now(),
             'updated_at' => now(),
         ];
-        
+
         DB::table('familycards')->insert($data);
 
         return redirect('/kk/home')->with('success', 'KK Baru Berhasil Ditambahkan!');
@@ -89,7 +69,7 @@ class familymembercontroller extends Controller
     // UNTUK ANGGGOTA KK
     public function create_m(string $id)
     {
-       try {
+        try {
             // $fcard = DB::table('familycards', 'fc')
             //     ->join('familycard_detail as fcd', 'fc.id', '=', 'fcd.familycard_id')
             //     ->get();
@@ -100,7 +80,7 @@ class familymembercontroller extends Controller
                 ->first();
             // $fcard = DB::table('familycards')->select('id', 'fc_number')->get();
 
-                
+
             $fmember = DB::table('familycard_detail')
                 ->where('familycard_id', $id)
                 ->first();
@@ -117,18 +97,19 @@ class familymembercontroller extends Controller
         $data = [
             'familycard_id' => $request->input('familycard_id'),
             'full_name' => $request->input('full_name'),
-            'pin' => $request->input('pin'),
+            'pin' => $request->input('pin'),  
             'gender' => $request->input('gender'),
             'place_of_birth' => $request->input('place_of_birth'),
             'date_of_birth' => $request->input('date_of_birth'),
             'education' => $request->input('education'),
             'employment' => $request->input('employment'),
-            'created_at' => now(), 
+            'status' => $request->input('status'),
+            'created_at' => now(),
             'updated_at' => now()
         ];
-        
+
         DB::table('familycard_detail')->insert($data);
-        
+
 
         return redirect('/kk/home')->with('success', 'Anggota KK Berhasil Ditambahkan!');
     }
@@ -143,19 +124,19 @@ class familymembercontroller extends Controller
             //     ->get();
             // // return (dd($fcard));
             // return view('layouts.family.show', ['fcard' => $fcard]); 
-            
-            $fcard = DB::table('familycards')->where('id', $id )->first();
+
+            $fcard = DB::table('familycards')->where('id', $id)->first();
             // $fcard = DB::table('familycards')
             //     ->where('id', 'fc_number')
             //     ->first();
 
             // $fmember = DB::table('familycard_detail')->where('id',$id)->first();
 
-             
+
             $fmember = DB::table('familycard_detail')
                 ->where('familycard_id', '=', $fcard->id)
                 ->paginate(10);
-                // ->first();
+            // ->first();
             // return (dd($fcard,$fmember));
             // dd($fmember->first());
             return view('layouts.family.show', compact('fcard', 'fmember'));
@@ -167,10 +148,10 @@ class familymembercontroller extends Controller
     public function pdf($id)
     {
         $mpdf = new \Mpdf\Mpdf();
-        $fcard = DB::table('familycards')->where('id', $id )->first();
+        $fcard = DB::table('familycards')->where('id', $id)->first();
         $fmember = DB::table('familycard_detail')
-                ->where('familycard_id', '=', $fcard->id)
-                ->paginate(10);
+            ->where('familycard_id', '=', $fcard->id)
+            ->paginate(10);
         $mpdf->WriteHTML(view('layouts.family.show', compact('fcard', 'fmember')));
         $mpdf->Output();
     }
@@ -178,10 +159,10 @@ class familymembercontroller extends Controller
     public function dowmload_pdf($id)
     {
         $mpdf = new \Mpdf\Mpdf();
-        $fcard = DB::table('familycards')->where('id', $id )->first();
+        $fcard = DB::table('familycards')->where('id', $id)->first();
         $fmember = DB::table('familycard_detail')
-                ->where('familycard_id', '=', $fcard->id)
-                ->paginate(10);
+            ->where('familycard_id', '=', $fcard->id)
+            ->paginate(10);
         $mpdf->WriteHTML(view('layouts.family.show', compact('fcard', 'fmember')));
         $mpdf->Output('download-pdf-KK.pdf', 'D');
     }
@@ -189,25 +170,24 @@ class familymembercontroller extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id) 
+    public function edit(string $id)
     {
         $fcard = DB::table('familycards')
-                    ->where('id', $id)
-                    ->first();
+            ->where('id', $id)
+            ->first();
 
         $fmember = DB::table('familycard_detail')
-                ->where('familycard_id', '=', $id)
-                ->paginate(10);
+            ->where('familycard_id', '=', $id)
+            ->paginate(10);
         // return dd($fcard,$fmember);
         return view('layouts.family.edit', compact('fcard', 'fmember'));
-        
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {   
+    {
 
         $validatedData = $request->validate([
             'fc_number' => 'required',
@@ -228,28 +208,26 @@ class familymembercontroller extends Controller
                 'ward' => $request->input('ward'),
                 'districk' => $request->input('districk'),
                 'regency' => $request->input('regency'),
-                'region' => $request->input('region'), 
+                'region' => $request->input('region'),
                 'updated_at' => now()
             ]);
 
         return redirect("/kk/show/{$id}")->with('success', 'Data KK Berhasil Diubah');
-    
     }
 
     public function edit_m(string $id)
     {
-    //    $user = DB::select('SELECT * FROM familycards WHERE id = ?', [$id]);
-    //    $user = DB::table('familycards')->where('id', (int)$id)->first();
+        //    $user = DB::select('SELECT * FROM familycards WHERE id = ?', [$id]);
+        //    $user = DB::table('familycards')->where('id', (int)$id)->first();
         // $knownId = DB::table('familycards')->where('id')->first();
-        $fmember = DB::table('familycard_detail')->where('id',$id)->first();
+        $fmember = DB::table('familycard_detail')->where('id', $id)->first();
 
         $fcard = DB::table('familycards')
-                ->where('id', $fmember->familycard_id)
-                ->first();
+            ->where('id', $fmember->familycard_id)
+            ->first();
         // dd($fcard); // Harus mengembalikan data
         // return dd($fcard);
-        return view('layouts.family.edit2', compact('fcard','fmember'));
-
+        return view('layouts.family.edit2', compact('fcard', 'fmember'));
     }
 
     public function update_m(Request $request, string $id)
@@ -263,6 +241,7 @@ class familymembercontroller extends Controller
             'date_of_birth' => 'required',
             'education' => 'required',
             'employment' => 'required',
+            'status' => 'required',
         ]);
 
         DB::table('familycard_detail')
@@ -276,6 +255,7 @@ class familymembercontroller extends Controller
                 'date_of_birth' => $validatedData['date_of_birth'],
                 'education' => $validatedData['education'],
                 'employment' => $validatedData['employment'],
+                'status' => $validatedData['status'],
             ]);
 
 
@@ -288,19 +268,17 @@ class familymembercontroller extends Controller
     {
         // dd($id);
         DB::table('familycards')->where('id', $id)->delete();
-        
-        return redirect('/kk/home')->with('success', ' berhasil menghapus Data KK');
 
+        return redirect('/kk/home')->with('success', ' berhasil menghapus Data KK');
     }
 
     public function delete(string $id)
     {
         // dd($id);
         DB::table('familycard_detail')
-        ->where('id', $id)
-        ->delete();
+            ->where('id', $id)
+            ->delete();
 
         return redirect("/kk/home")->with('success', ' berhasil menghapus Anggota KK');
-
     }
 }

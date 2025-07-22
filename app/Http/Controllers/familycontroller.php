@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use App\Http\Controllers\familymembercontroller;
 use Illuminate\Http\Request;
-
+use Illuminate\Routing\Controller;
 
 class familycontroller extends Controller
 {

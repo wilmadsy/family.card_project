@@ -85,6 +85,14 @@
                                 <label for="employment" class="form-label required-field">Pekerjaan</label>
                                 <input type="text" class="form-control" id="employment" name="employment" value="{{ old('employment', $fmember->employment) }}" required>
                             </div>
+                            <div class="col-md-4">
+                                <label for="status" class="form-label required-field">status</label>
+                                <select class="form-select" id="status" name="status" value="{{ old('status', $fmember->status) }}" required>
+                                    <option value="">Pilih</option>
+                                    <option value="ayah">ayah</option>
+                                    <option value="ibu">ibu</option>
+                                    <option value="anak">anak</option>
+                                </select >
                         </div>
                     </div>
 

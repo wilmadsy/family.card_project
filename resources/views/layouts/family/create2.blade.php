@@ -85,6 +85,15 @@
                                 <label for="employment" class="form-label required-field">Pekerjaan</label>
                                 <input type="text" class="form-control" id="employment" name="employment" required>
                             </div>
+                            <div class="col-md-4">
+                                <label for="status" class="form-label required-field">Status</label>
+                                 <select class="form-select" id="status" name="status" required>
+                                    <option value="">Pilih</option>
+                                    <option value="ayah">ayah</option>
+                                    <option value="ibu">ibu</option>
+                                    <option value="anak">anak</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Data</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .header-container {
             display: flex;
@@ -47,15 +48,35 @@
     </style>
 </head>
 <body>
+     @if (session('success'))
+        <script>
+            Swal.fire({
+                title: "Berhasil",
+                text: "{{ session('success') }}",
+                icon: "success"
+            });
+        </script>
+    @endif  
     <!-- Header dengan tombol tambah -->
-        <div class="header-container">
+            <div>
             <h2>Daftar Data</h2>
+            <h2 class="mb-4">Daftar kartu keluarga</h2> 
+            
             <a href="{{ route('data.create') }}" class="btn btn-primary">
                 + Tambah KK Baru
+                
             </a>
         </div>
-
-    <h2 class="mb-4">Daftar kartu keluarga</h2> 
+        <div class="mt-3">
+            <form method="GET">
+                <div class="input-group mb-3">
+                    <input type="text" name="no_kk" class="form-control" placeholder="Search No.KK....." aria-label="Search No.KK" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-primary" type="submit" id="button-addon2">search</button>
+                </div>
+            </form>
+        </div>
+    
+    <div class="header-container">
 
         <table class="member-table">
                     <thead>
@@ -91,64 +112,22 @@
                                     <a href="{{ route('data.show',$fc->id) }}" class="btn btn-sm btn-outline-primary">
                                         lihat detail
                                     </a>
-                                </td>
-                                    
-    
+                            </td>     
                         </tr>
                         
-                        @endforeach
-                    </tbody> 
+                        @endforeach 
+                    </tbody>     
                 </table>
-
-      {{-- <!-- Filter Form (opsional) -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <form method="GET" action="">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Cari nama..." value="{{ request('search') }}">
-                        <button class="btn btn-primary" type="submit">Cari</button>
-                    </div>
-                </form>
-            </div>
+    </div>
+        <div class="paginaton"> 
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4 align-items-end" style="margin-top: auto;">
+            {{ $fcard->links('pagination::bootstrap-5') }}
+        </div>
         </div>  
         
-    
-    <!-- Contoh data statis untuk preview -->
-    @foreach ($fcard as $fc)  
-<div class="data-item">
-            <span class="fw-bold">No.KK: {{ $fc->fc_number }}</span> - 
-            <a href="{{ route('data.show', $fc->id) }}" class="btn btn-sm btn-outline-primary detail-link">
-                Lihat Report
-            </a>
-            <hr/>
-            &nbsp;
-    
-           
-            <a href="{{ route('data.edit', $fc->id) }}" class="btn btn-sm btn-outline-primary detail-link">
-                Edit
-            </a>
-            
-            <div class="clearfix"></div>
-
-            <form action="{{ route('data.delete', $fc->id) }}" method="POST" class="d-inline">
-            @csrf
-            @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm" 
-                            onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                        <i class="fas fa-trash"></i> Hapus
-                    </button>
-                </form>
-
-        </div>
-        @endforeach --}}
-        
-        <!-- Pagination -->
-        {{-- <div class="d-flex justify-content-center mt-4">
-            {{ $fmember->links('name_view.custom_pagination') }}
-        </div> 
-    </div>  --}}
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 </html>
 
