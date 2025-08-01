@@ -26,7 +26,7 @@ class familymembercontroller extends Controller
         )
         ->where('fc.fc_number', 'LIKE', '%'.$no_kk.'%')
         ->orderBy('fc.id', 'desc')
-        ->paginate(5);
+        ->paginate(6);
         // 
         // );
         
@@ -119,6 +119,7 @@ class familymembercontroller extends Controller
     public function show(string $id)
     {
         try {
+            // $ayah = DB::table('familycard_detail')->where('status', 'ayah')->first(); // Ambil data ayah
             // $fcard = DB::table('familycards', 'fc')
             //     ->join('familycard_detail as fcd', 'fc.id', '=', 'fcd.familycard_id')
             //     ->get();
@@ -134,12 +135,11 @@ class familymembercontroller extends Controller
 
 
             $fmember = DB::table('familycard_detail')
-                ->where('familycard_id', '=', $fcard->id)
+                ->where('familycard_id', '=', $fcard->id,)
                 ->paginate(10);
             // ->first();
             // return (dd($fcard,$fmember));
-            // dd($fmember->first());
-            return view('layouts.family.show', compact('fcard', 'fmember'));
+            return view('layouts.family.show', compact('fcard', 'fmember',));
         } catch (\Throwable $th) {
             throw $th;
         }

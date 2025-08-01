@@ -100,6 +100,12 @@
                 <table>
                     <tr>
                         <td style="width: 50%;">
+                            <p><strong>kepala keluarga:</strong>
+                                @foreach ($fmember as $item)
+                                    {{ $item->full_name }}
+                                @endforeach
+                                
+                            </p>
                             <p><strong>Alamat:</strong> {{ $fcard->address; }}</p>
                             <p><strong>RT/RW:</strong> {{ $fcard->rt_rw; }}</p>
                             <p><strong>Desa/Kelurahan:</strong> {{ $fcard->ward; }}</p>
